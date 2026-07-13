@@ -1,0 +1,7 @@
+[
+  {"sku":"OOP-S001-STD","name":"Standard Opportunity Pack","type":"mystery_pack","price":29.99,"cards":5,"openComp":"$5/unit for first 50 monthly, then $1/unit, plus 5% net pack sales","squareItemId":"","quickbooksItemId":""},
+  {"sku":"OOP-S001-PRM","name":"Premium Opportunity Pack","type":"mystery_pack","price":49.99,"cards":5,"openComp":"same monthly allocation plus 5% net pack sales","squareItemId":"","quickbooksItemId":""},
+  {"sku":"OOP-S001-CHS","name":"Chase Opportunity Pack","type":"mystery_pack","price":79.99,"cards":5,"openComp":"same monthly allocation plus 5% net pack sales","squareItemId":"","quickbooksItemId":""},
+  {"sku":"RAW-DISPLAY","name":"Raw Display Singles","type":"single","price":null,"cards":1,"openComp":"25% of net card sales","squareItemId":"","quickbooksItemId":""},
+  {"sku":"SEALED-PRODUCT","name":"Manufacturer-Sealed Product","type":"sealed","price":null,"cards":null,"openComp":"20% of net sales","squareItemId":"","quickbooksItemId":""}
+]
