@@ -76,6 +76,45 @@ const Home: NextPage = () => {
         </div>
       </section>
 
+      {/* Legacy & Philosophy */}
+      <section className="bg-brand-chrome-900 border-t border-b border-brand-chrome-800 py-20 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none bg-orange-glow opacity-30" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
+            <span className="text-brand-orange text-xs font-bold uppercase tracking-widest bg-brand-chrome-800 px-3 py-1">
+              Brand Philosophy
+            </span>
+            <h2 className="text-white font-black text-4xl uppercase mt-4 mb-6">
+              Organic. Personal.<br />
+              Environmental. <span className="text-brand-orange">Necessities.</span>
+            </h2>
+            <p className="text-brand-chrome-300 text-sm leading-relaxed mb-6">
+              O.P.E.N. is not just a storefront — it is a Los Angeles-based community hub, boutique, and collective designed to open minds and connect local service professionals, creators, and wellness enthusiasts in close proximity to progress.
+            </p>
+            <div className="grid grid-cols-2 gap-4 border-t border-brand-chrome-800 pt-6">
+              <div>
+                <span className="text-white font-bold text-sm block">Curate. Protect. Repeat.</span>
+                <span className="text-brand-chrome-500 text-xs">Keeping the card vault secure and graded gems authenticated.</span>
+              </div>
+              <div>
+                <span className="text-white font-bold text-sm block">Juice Up Wellness</span>
+                <span className="text-brand-chrome-500 text-xs">Integrating healthy soursop subscription programs into trade nights.</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-black border border-brand-chrome-800 p-8 text-center flex flex-col items-center justify-center min-h-[300px]">
+            <span className="text-brand-orange text-4xl mb-4">👑</span>
+            <p className="text-white font-black text-2xl uppercase tracking-tight leading-snug max-w-sm mb-6">
+              &ldquo;It&apos;s not just a hobby. It&apos;s the legacy I build.&rdquo;
+            </p>
+            <span className="text-brand-chrome-500 text-xs uppercase tracking-widest font-mono">
+              — ACoolCOLLECTOR
+            </span>
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="bg-black py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

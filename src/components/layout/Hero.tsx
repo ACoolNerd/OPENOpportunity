@@ -8,9 +8,9 @@ interface HeroProps {
 }
 
 export default function Hero({
-  title = 'Mystery Packs. Authenticated.',
+  title = 'OPEN. OPEN. OPPORTUNITY.',
   subtitle =
-    'Discover curated TCG, sports, and collectible mystery packs — every card verified, every pack authenticated with a Digital Product Passport.',
+    'The ACoolCOLLECTOR Repack Series. 5 Premium Cards. Infinite Possibilities. Powered by the Organic, Personal, Environmental, Necessities (O.P.E.N.) Boutique & Juice Up ecosystem.',
   ctaLabel = 'Shop Mystery Packs',
   ctaHref = '/retail',
 }: HeroProps) {
