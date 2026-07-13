@@ -1,0 +1,42 @@
+{
+  "project": "OPEN Opportunity × ACoolCOLLECTOR × Collectors Co-op",
+  "repository": "https://github.com/ACoolNerd/OPENOpportunity",
+  "download_all": "https://github.com/ACoolNerd/OPENOpportunity/archive/refs/heads/main.zip",
+  "live_pages_target": "https://acoolnerd.github.io/OPENOpportunity/",
+  "pricing": {
+    "standard_pack": 29.99,
+    "premium_pack": 49.99,
+    "chase_pack": 79.99,
+    "open_first_50_monthly": 5.0,
+    "open_after_50_monthly": 1.0,
+    "monthly_threshold": 250.0,
+    "raw_single_commission": "25% of defined net merchandise sales",
+    "manufacturer_sealed_commission": "20% of defined net merchandise sales"
+  },
+  "ready_materials": [
+    "public/assets/open-opportunity-social-kit.png",
+    "public/assets/open-stephen-hero.png",
+    "public/downloads/social-templates.svg",
+    "public/downloads/entry-card.html",
+    "public/downloads/packaging-sheet.html",
+    "public/downloads/brand-guide.html",
+    "public/downloads/media-library.html",
+    "public/downloads/governance-templates.html",
+    "public/downloads/promo-storyboard.html",
+    "public/downloads/table-layout.svg",
+    "public/display-plan.html",
+    "docs/OPERATIONS.md",
+    "docs/SECURITY.md",
+    "docs/DEPLOYMENT.md",
+    "data/catalog.json"
+  ],
+  "admins": [
+    {"name": "Stephen Smalls", "role": "co-founder / OPEN retail super admin"},
+    {"name": "Keith McPherson", "role": "ACoolNERD / ACoolCOLLECTOR super admin"}
+  ],
+  "security": {
+    "passwords_in_source": false,
+    "mfa_required": true,
+    "campaign_enabled": false
+  }
+}
