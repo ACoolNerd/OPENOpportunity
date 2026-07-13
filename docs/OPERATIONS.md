@@ -23,6 +23,8 @@
 4. Place up to 40 visible raw cards with 10 reserve cards inside the 3 × 3-foot footprint.
 5. Reconcile sales/refunds weekly and settlements monthly.
 6. Rotate, reprice, or return unsold inventory at day 90.
+7. Generate a unique QR passport label for each physical item, verify the destination, and print on 4 × 6 stock before placement.
+8. Use the Partner Portal Integration Console to preview Square and QuickBooks mappings; treat all generated records as simulations until live OAuth approval.
 
 ## Physical fixtures
 

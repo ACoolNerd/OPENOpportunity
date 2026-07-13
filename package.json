@@ -1,1 +1,23 @@
-{"name":"open-opportunity","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"node --watch server.js","start":"node server.js","test":"node --test","check":"node --check server.js && node --check public/app.js && node --check public/community.js"},"engines":{"node":">=20"},"dependencies":{"dotenv":"^16.4.5","express":"^4.21.1","express-rate-limit":"^7.4.1","helmet":"^8.0.0","qrcode":"^1.5.4"}}
+{
+  "name": "open-opportunity",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js",
+    "build:motion": "esbuild src/hero-motion.js --bundle --minify --format=iife --outfile=public/hero-motion.js",
+    "test": "node --test",
+    "check": "node --check server.js && node --check public/app.js && node --check public/community.js && node --check public/partner.js && node --check public/qr-generator.js"
+  },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.28.1",
+    "express": "^4.21.1",
+    "express-rate-limit": "^7.4.1",
+    "framer-motion": "^12.42.2",
+    "helmet": "^8.0.0",
+    "qrcode": "^1.5.4"
+  }
+}

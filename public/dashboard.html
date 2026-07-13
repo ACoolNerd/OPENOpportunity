@@ -1,1 +1,40 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Partner Canvas</title><link rel="stylesheet" href="/styles.css"></head><body><main class="page"><a href="/">← Public site</a><p class="eyebrow">Partner operations canvas</p><h1>OPEN Opportunity command center</h1><p>Super-admin access for Stephen Smalls and Keith McPherson. Credentials are read from server environment variables and never stored in this page.</p><form id="adminLogin" class="form"><label>Admin access token<input name="token" type="password" required autocomplete="current-password"></label><button class="button">Open dashboard</button></form><section id="adminData"></section></main><script src="/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OPEN Partner Portal</title><link rel="stylesheet" href="/styles.css"></head>
+<body class="partner-body">
+  <header class="portal-header no-print"><a class="brand" href="/"><img src="/assets/brand/open-mark-256.jpg" alt=""><span>OPEN <b>PARTNER PORTAL</b></span></a><span class="portal-mode">Secure simulation workspace</span></header>
+  <main class="page portal-shell">
+    <a class="no-print" href="/">← Public site</a><p class="eyebrow no-print">Partner operations canvas</p><h1 class="no-print">Command center</h1>
+    <p class="no-print">Separate super-admin access for Stephen Smalls and Keith McPherson. Credentials are read from server environment variables and are never stored in this page.</p>
+    <form id="adminLogin" class="form portal-login no-print"><label>Admin access token<input name="token" type="password" required autocomplete="current-password"></label><button class="button">Open dashboard</button></form>
+    <div id="adminMessage" class="no-print" aria-live="polite"></div>
+
+    <section id="portalWorkspace" class="portal-workspace" hidden>
+      <div class="portal-nav no-print"><button data-view="overview" class="active">Overview</button><button data-view="integration">Integration Console</button><button data-view="inventory">Inventory & Labels</button></div>
+
+      <section data-panel="overview" class="portal-panel"><div id="overviewData"></div><button id="exportBtn" class="button no-print">Export catalog mapping CSV</button></section>
+
+      <section data-panel="integration" class="portal-panel" hidden>
+        <div class="portal-section-head"><div><p class="eyebrow">Square → Co-op ledger → QuickBooks</p><h2>Integration Console</h2></div><div class="simulation-badge">Simulation only</div></div>
+        <p class="notice">This preview applies the approved OPEN allocation and merchant-fee workflow. It does not charge a card, write to Square, or post to QuickBooks.</p>
+        <form id="integrationForm" class="console-form no-print">
+          <label>Catalog item<select name="sku" id="integrationSku"></select></label>
+          <label>Quantity<input name="quantity" type="number" min="1" max="25" value="1"></label>
+          <label>Channel<select name="channel"><option value="in_person">OPEN counter · card present</option><option value="online">Online checkout</option></select></label>
+          <label>Monthly starting unit<input name="monthlyUnitNumber" type="number" min="1" value="1"></label>
+          <button class="button" type="submit">Simulate mapping</button>
+        </form>
+        <div id="integrationResult" aria-live="polite"></div>
+      </section>
+
+      <section data-panel="inventory" class="portal-panel inventory-panel" hidden>
+        <div class="portal-section-head no-print"><div><p class="eyebrow">Physical retail system</p><h2>Inventory & 4 × 6 labels</h2></div><button id="printLabels" class="button">Print all 4 × 6 labels</button></div>
+        <div class="inventory-table-wrap no-print"><table id="inventoryTable"><thead><tr><th>SKU</th><th>Product</th><th>Type</th><th>Price</th><th>Square ID</th><th>QuickBooks ID</th><th>Label</th></tr></thead><tbody></tbody></table></div>
+        <div class="qr-builder no-print"><p class="eyebrow">QRGenerator</p><h3>Create a unique physical-item passport</h3><form id="qrGeneratorForm" class="console-form"><label>SKU<input name="sku" value="RAW-DISPLAY"></label><label>Product name<input name="name" value="OPEN Display Single"></label><label>Retail price<input name="price" type="number" min="0" step="0.01" value="25"></label><button class="button">Generate QR label</button></form></div>
+        <div id="inventoryLabels" class="inventory-labels"></div>
+      </section>
+    </section>
+  </main>
+  <script src="/qr-generator.js"></script><script src="/partner.js"></script>
+</body>
+</html>

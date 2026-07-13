@@ -26,6 +26,22 @@ app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] })
 
 const clean = (value, max = 100) => String(value || '').trim().replace(/[<>]/g, '').slice(0, max);
 const allocation = units => Math.min(units, 50) * 5 + Math.max(units - 50, 0);
+const round = value => Math.round((Number(value) + Number.EPSILON) * 100) / 100;
+const mapTransaction = ({ item, quantity = 1, channel = 'in_person', monthlyUnitNumber = 1 }) => {
+  const gross = round((item.price || 0) * quantity);
+  const feeRate = channel === 'online' ? 0.029 : 0.026;
+  const feeFixed = channel === 'online' ? 0.30 : 0.15;
+  const processorFee = round(gross * feeRate + feeFixed);
+  const net = round(gross - processorFee);
+  let openPayable = 0;
+  if (item.type === 'mystery_pack') {
+    for (let i = 0; i < quantity; i++) openPayable += monthlyUnitNumber + i <= 50 ? 5 : 1;
+    openPayable = round(openPayable + net * 0.05);
+  } else if (item.type === 'single') openPayable = round(net * 0.25);
+  else if (item.type === 'sealed') openPayable = round(net * 0.20);
+  const acoolProceeds = round(net - openPayable);
+  return { gross, processorFee, net, openPayable, acoolProceeds, feeRate, feeFixed };
+};
 const auth = (req, res, next) => {
   const token = req.get('x-admin-token');
   const roles = token && token === process.env.ADMIN_TOKEN_KEITH ? { name: 'Keith McPherson', role: 'super_admin' }
@@ -102,7 +118,34 @@ app.get('/api/admin/export/catalog.csv', auth, (_req, res) => {
   res.attachment('open-opportunity-catalog-mapping.csv').send(csv);
 });
 
+app.post('/api/admin/integrations/simulate', auth, (req, res) => {
+  const item = catalog.find(row => row.sku === clean(req.body.sku, 48));
+  if (!item || item.price == null) return res.status(400).json({ error: 'Select a fixed-price catalog item.' });
+  const quantity = Math.min(Math.max(Number.parseInt(req.body.quantity, 10) || 1, 1), 25);
+  const monthlyUnitNumber = Math.min(Math.max(Number.parseInt(req.body.monthlyUnitNumber, 10) || 1, 1), 10000);
+  const channel = req.body.channel === 'online' ? 'online' : 'in_person';
+  const totals = mapTransaction({ item, quantity, channel, monthlyUnitNumber });
+  const transactionId = `SIM-${Date.now()}`;
+  res.json({
+    simulated: true,
+    notice: 'Preview only. No Square payment or QuickBooks posting occurred.',
+    transaction: { transactionId, occurredAt: new Date().toISOString(), sku: item.sku, itemName: item.name, quantity, channel, monthlyUnitNumber, ...totals },
+    square: { orderId: transactionId, catalogObjectId: item.squareItemId || 'MAP_IN_SQUARE', itemVariation: item.sku, quantity, grossSales: totals.gross, processingFee: totals.processorFee, netSales: totals.net, tender: channel === 'online' ? 'ONLINE_CARD' : 'CARD_PRESENT' },
+    quickbooks: { documentType: 'SalesReceipt', referenceNumber: transactionId, incomeAccount: 'Collectibles Sales', grossSales: totals.gross, merchantFeeExpense: totals.processorFee, openPayableLiability: totals.openPayable, acoolNetProceeds: totals.acoolProceeds, squareClearing: totals.net }
+  });
+});
+
+app.post('/api/admin/qr-label', auth, (req, res) => {
+  const sku = clean(req.body.sku, 32).toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  const name = clean(req.body.name, 100);
+  const price = Math.max(Number(req.body.price) || 0, 0);
+  if (!sku || !name) return res.status(400).json({ error: 'SKU and product name are required.' });
+  const id = `OPEN-${sku}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  const passportUrl = new URL(`/passport.html?id=${encodeURIComponent(id)}`, base).toString();
+  res.status(201).json({ id, sku, name, price: round(price), passportUrl, qrImageUrl: `/api/qr?to=${encodeURIComponent(passportUrl)}`, createdBy: req.user.name, status: 'prototype_label' });
+});
+
 app.get('/healthz', (_req, res) => res.json({ ok: true }));
 app.use((_req, res) => res.status(404).sendFile(path.join(__dirname, 'public', '404.html')));
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) app.listen(port, () => console.log(`OPEN Opportunity running at ${base}`));
-export { app, allocation };
+export { app, allocation, mapTransaction };
