@@ -8,33 +8,49 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // OPENOpportunity design system tokens
+        open: {
+          ink: '#090b09',
+          surface: '#11150e',
+          olive: '#6b8735',
+          lime: '#b7df38',
+          cream: '#f6f1e7',
+          orange: '#d97757',
+          sky: '#6a9bcc',
+          gray: '#b0aea5',
+        },
         // OPENOpportunity brand tokens
         brand: {
-          black: '#000000',
-          orange: '#FF6600',
-          white: '#FFFFFF',
-          // Chrome / metallic shades
+          black: '#090b09',
+          orange: '#d97757',
+          white: '#f6f1e7',
+          // Chrome / metallic shades mapped to organic values
           chrome: {
-            50:  '#F8F8F8',
-            100: '#E8E8E8',
-            200: '#C8C8C8',
-            300: '#A8A8A8',
-            400: '#888888',
-            500: '#686868',
-            600: '#484848',
-            700: '#282828',
-            800: '#181818',
-            900: '#0A0A0A',
+            50:  '#f6f1e7',
+            100: '#e1dbcf',
+            200: '#c5beb1',
+            300: '#a7a195',
+            400: '#8c867a',
+            500: '#716c62',
+            600: '#565249',
+            700: '#3a3832',
+            800: '#1d1c19',
+            900: '#11150e',
           },
         },
       },
       backgroundImage: {
         'chrome-gradient':
-          'linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 25%, #0d0d0d 50%, #2e2e2e 75%, #1a1a1a 100%)',
+          'linear-gradient(135deg, #11150e 0%, #1a2214 25%, #090b09 50%, #1a2214 75%, #11150e 100%)',
         'orange-glow':
-          'radial-gradient(circle, rgba(255,102,0,0.3) 0%, transparent 70%)',
+          'radial-gradient(circle, rgba(217,119,87,0.25) 0%, transparent 70%)',
+        'lime-glow':
+          'radial-gradient(circle, rgba(183,223,56,0.15) 0%, transparent 70%)',
       },
       fontFamily: {
+        display: ['Poppins', 'Arial Black', 'sans-serif'],
+        editorial: ['Lora', 'Georgia', 'serif'],
+        utility: ['Inter', 'system-ui', 'sans-serif'],
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       animation: {
