@@ -14,6 +14,7 @@ A launch-ready prototype for the OPEN LA retail program: branded landing page, p
 - Source-faithful OPEN media library, Stephen Smalls identity-preserving hero, and installable app icons
 - Approved multi-platform Opportunity Pack campaign board for YouTube, X, Facebook, and Instagram
 - Operating, security, and deployment documentation
+- Responsive Google-clarity × Claude-warm design system documented in [DESIGN.md](DESIGN.md)
 - Community app prototype for loyalty points, buy-10-get-1 drinks, Juice Club, events, card registration, creator pathway, and profile state
 - Non-binding governance/repayment review templates and 15–30 second campaign storyboard
 

@@ -21,6 +21,7 @@ app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], 
 app.use(express.json({ limit: '20kb' }));
 app.use(express.urlencoded({ extended: false, limit: '20kb' }));
 app.use('/api/', rateLimit({ windowMs: 15 * 60 * 1000, limit: 120, standardHeaders: 'draft-7', legacyHeaders: false }));
+app.get('/downloads', (_req, res) => res.sendFile(path.join(__dirname, 'public', 'downloads.html')));
 app.use(express.static(path.join(__dirname, 'public'), { extensions: ['html'] }));
 
 const clean = (value, max = 100) => String(value || '').trim().replace(/[<>]/g, '').slice(0, max);
