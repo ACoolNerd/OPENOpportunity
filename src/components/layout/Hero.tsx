@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 
 interface HeroProps {
   title?: string;
@@ -40,15 +41,25 @@ export default function Hero({
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-brand-chrome-900 border border-brand-chrome-700 px-4 py-1.5 mb-8">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="inline-flex items-center gap-2 bg-brand-chrome-900 border border-brand-chrome-700 px-4 py-1.5 mb-8"
+        >
           <span className="w-2 h-2 rounded-full bg-brand-orange animate-pulse" />
-          <span className="text-brand-chrome-300 text-xs font-medium uppercase tracking-widest">
+          <span className="text-brand-chrome-300 text-xs font-medium uppercase tracking-widest font-mono">
             Collectors Co-op × OPEN LA
           </span>
-        </div>
+        </motion.div>
 
         {/* Headline */}
-        <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-white uppercase leading-none mb-6">
+        <motion.h1 
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="text-5xl sm:text-6xl md:text-7xl font-display font-black text-white uppercase leading-none mb-6"
+        >
           {title.split('.').map((part, i) => (
             <span key={i}>
               {i > 0 && (
@@ -58,31 +69,46 @@ export default function Hero({
               {i < title.split('.').length - 2 && ' '}
             </span>
           ))}
-        </h1>
+        </motion.h1>
 
         {/* Sub-headline */}
-        <p className="text-brand-chrome-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.9, delay: 0.35 }}
+          className="text-brand-chrome-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-editorial font-medium italic"
+        >
           {subtitle}
-        </p>
+        </motion.p>
 
         {/* CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.55 }}
+          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+        >
           <Link
             href={ctaHref}
-            className="bg-brand-orange hover:bg-orange-500 text-white font-black text-sm uppercase tracking-widest px-8 py-4 transition-all duration-200 hover:scale-105 active:scale-95 min-w-[200px]"
+            className="bg-brand-orange hover:bg-orange-500 text-white font-black text-xs uppercase tracking-widest px-8 py-4 transition-all duration-205 hover:scale-105 active:scale-95 min-w-[200px]"
           >
             {ctaLabel}
           </Link>
           <Link
             href="/pack-reveal"
-            className="border border-brand-chrome-600 hover:border-white text-brand-chrome-300 hover:text-white font-bold text-sm uppercase tracking-widest px-8 py-4 transition-all duration-200 min-w-[200px]"
+            className="border border-brand-chrome-600 hover:border-white text-brand-chrome-300 hover:text-white font-bold text-xs uppercase tracking-widest px-8 py-4 transition-all duration-200 min-w-[200px]"
           >
             Reveal a Pack
           </Link>
-        </div>
+        </motion.div>
 
         {/* Trust badges */}
-        <div className="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.0, delay: 0.75 }}
+          className="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto border-t border-brand-chrome-800/40 pt-8"
+        >
           {[
             { label: 'Authenticated', icon: '🔐' },
             { label: 'QR Passport',   icon: '📱' },
@@ -90,12 +116,12 @@ export default function Hero({
           ].map((badge) => (
             <div key={badge.label} className="flex flex-col items-center gap-2">
               <span className="text-2xl">{badge.icon}</span>
-              <span className="text-brand-chrome-400 text-xs uppercase tracking-widest">
+              <span className="text-brand-chrome-400 text-[10px] font-bold uppercase tracking-widest font-mono">
                 {badge.label}
               </span>
             </div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

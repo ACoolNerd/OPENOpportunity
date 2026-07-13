@@ -4,12 +4,19 @@ import { useState } from 'react';
 import { formatUSD } from '@/lib/commission';
 import { ROTATION_DAYS } from '@/lib/inventory';
 import { useApp } from '@/context/AppContext';
+import QRGenerator from '@/components/passport/QRGenerator';
+
+type TxScenario = 'standard-pos' | 'premium-app' | 'single-pos' | 'drink-app';
 
 const AdminPage: NextPage = () => {
-  const { events, cardAssets } = useApp();
+  const { events } = useApp();
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
-  // Simulated transaction records for the QuickBooks report
+  // Simulation controls state
+  const [selectedTxType, setSelectedTxType] = useState<TxScenario>('standard-pos');
+  const [monthlyVolume, setMonthlyVolume] = useState<number>(35); // Seeded month volume
+
+  // Simulated transaction records for the static QuickBooks history table
   const simulatedSales = [
     { id: 'REC-1001', date: '2026-07-10', product: 'Premium Soursop Wellness Juice', qty: 25, price: 7.99, method: 'Square (In-Person)', fee: 6.34, openComm: 0.00, acoolNet: 193.41 },
     { id: 'REC-1002', date: '2026-07-11', product: 'Organic Espresso Latte', qty: 15, price: 4.99, method: 'Square (In-Person)', fee: 3.32, openComm: 0.00, acoolNet: 71.53 },
@@ -17,6 +24,87 @@ const AdminPage: NextPage = () => {
     { id: 'REC-1004', date: '2026-07-12', product: 'O.P.E.N. Premium Mystery Pack (Series 001)', qty: 12, price: 49.99, method: 'Square (In-Person)', fee: 17.40, openComm: 78.13, acoolNet: 504.35 },
     { id: 'REC-1005', date: '2026-07-13', product: 'Vintage Collectible Mystery Single', qty: 8, price: 9.99, method: 'Square (In-Person)', fee: 3.28, openComm: 19.16, acoolNet: 57.48 }
   ];
+
+  // Waterfall Calculation Logic
+  let grossPrice = 29.99;
+  let isPack = true;
+  let isSingle = false;
+  let isDrink = false;
+  let feePercentage = 2.6;
+  let feeFlat = 0.15;
+  let sku = 'OP-STD-001';
+  let productName = 'O.P.E.N. Standard Mystery Pack (Series 001)';
+  let category = 'Mystery Packs';
+
+  if (selectedTxType === 'standard-pos') {
+    grossPrice = 29.99;
+    isPack = true;
+    feePercentage = 2.6;
+    feeFlat = 0.15;
+    sku = 'OP-STD-001';
+    productName = 'O.P.E.N. Standard Mystery Pack (Series 001)';
+    category = 'Mystery Packs';
+  } else if (selectedTxType === 'premium-app') {
+    grossPrice = 49.99;
+    isPack = true;
+    feePercentage = 2.9;
+    feeFlat = 0.30;
+    sku = 'OP-PREM-001';
+    productName = 'O.P.E.N. Premium Mystery Pack (Series 001)';
+    category = 'Mystery Packs';
+  } else if (selectedTxType === 'single-pos') {
+    grossPrice = 12.00;
+    isPack = false;
+    isSingle = true;
+    feePercentage = 2.6;
+    feeFlat = 0.15;
+    sku = 'AC-SINGLE-101';
+    productName = 'Vintage Collectible Single Card';
+    category = 'Raw Singles';
+  } else if (selectedTxType === 'drink-app') {
+    grossPrice = 7.99;
+    isPack = false;
+    isDrink = true;
+    feePercentage = 2.9;
+    feeFlat = 0.30;
+    sku = 'JU-SOURSOP-01';
+    productName = 'Premium Soursop Wellness Juice';
+    category = 'Wellness Drinks';
+  }
+
+  // Payout rate transitions based on monthly volume
+  const payoutRate = monthlyVolume <= 50 ? '$5.00 Base' : '$1.00 Base';
+  const basePayout = monthlyVolume <= 50 ? 5.00 : 1.00;
+
+  const squareFee = (grossPrice * (feePercentage / 100)) + feeFlat;
+  const netPrice = grossPrice - squareFee;
+
+  let stephenComm = 0;
+  if (isPack) {
+    stephenComm = basePayout + (netPrice * 0.05);
+  } else if (isSingle) {
+    stephenComm = netPrice * 0.25;
+  } else if (isDrink) {
+    stephenComm = 0;
+  }
+
+  const acoolNet = netPrice - stephenComm;
+
+  const squareMap = {
+    Token: `PROD-${sku.split('-')[1] || 'ITEM'}`,
+    ItemName: productName,
+    SKU: sku,
+    Price: grossPrice.toFixed(2),
+    Category: category
+  };
+
+  const qbMap = {
+    Product: productName,
+    UnitPrice: grossPrice.toFixed(2),
+    SquareFee: squareFee.toFixed(2),
+    OPENComm: stephenComm.toFixed(2),
+    ACoolNet: acoolNet.toFixed(2)
+  };
 
   // ─── Export Square POS Catalog CSV ──────────────────────────────────────────
   const downloadSquareCSV = () => {
@@ -59,7 +147,6 @@ const AdminPage: NextPage = () => {
     triggerFeedback('QuickBooks Online Sales Receipts CSV downloaded successfully!');
   };
 
-  // Trigger file download helper
   const triggerDownload = (content: string, filename: string) => {
     const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -85,14 +172,14 @@ const AdminPage: NextPage = () => {
 
       <div className="min-h-screen bg-black">
         {/* Header */}
-        <div className="bg-chrome-gradient border-b border-brand-chrome-800 py-12">
+        <div className="bg-chrome-gradient border-b border-brand-chrome-800 py-12 no-print">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3 mb-2">
-              <span className="bg-brand-orange text-white text-xs font-bold uppercase tracking-widest px-3 py-1">
-                Security clearance level 3
+              <span className="bg-brand-orange text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5">
+                Co-Op Portal
               </span>
               <span className="text-brand-chrome-600 text-xs uppercase tracking-widest font-mono">
-                Secure Co-Op Access
+                Secure Partner Access
               </span>
             </div>
             <h1 className="text-white font-black text-4xl uppercase">
@@ -104,13 +191,13 @@ const AdminPage: NextPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-10">
           
           {syncFeedback && (
-            <div className="bg-green-950/20 border border-green-500 text-green-400 p-3.5 text-xs font-bold uppercase tracking-wider text-center">
+            <div className="bg-green-950/20 border border-green-500 text-green-400 p-3.5 text-xs font-bold uppercase tracking-wider text-center no-print">
               {syncFeedback}
             </div>
           )}
 
           {/* Key operational metrics */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 no-print">
             {[
               { label: 'Total Inventory',    value: '433 Cards Loaded' },
               { label: 'Mystery Singles Pool',value: '55 Active' },
@@ -125,16 +212,15 @@ const AdminPage: NextPage = () => {
           </div>
 
           {/* Financial Integration Panel */}
-          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6">
+          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6 no-print">
             <h2 className="text-white font-black text-lg uppercase mb-2">
-              Accounting & Checkout <span className="text-brand-orange">Interoperability</span>
+              Accounting & Export <span className="text-brand-orange">Controls</span>
             </h2>
-            <p className="text-brand-chrome-405 text-xs mb-6 leading-relaxed">
-              Maintain synchronisation across systems. Download item catalogs to import directly into Stephen&apos;s **Square POS** registers, or download sales journals containing Square fee calculations and payouts to import into your **QuickBooks Ledger**.
+            <p className="text-brand-chrome-400 text-xs mb-6 leading-relaxed">
+              Export data schemas in batch format for your partner tools. Import item files to Square POS, or sync transaction receipts to QuickBooks Online.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
               {/* Square POS Export */}
               <div className="bg-black border border-brand-chrome-850 p-6 flex flex-col justify-between">
                 <div>
@@ -166,12 +252,154 @@ const AdminPage: NextPage = () => {
                   Download QuickBooks Sales Receipts (CSV)
                 </button>
               </div>
+            </div>
+          </section>
+
+          {/* NEW: Co-op Integration Console Section */}
+          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6 no-print">
+            <div className="border-b border-brand-chrome-800 pb-4 mb-6">
+              <h2 className="text-white font-black text-lg uppercase">
+                Co-op <span className="text-brand-orange">Integration Console</span>
+              </h2>
+              <p className="text-brand-chrome-505 text-xs mt-1">
+                Simulate transactional field mappings to Square POS and QuickBooks Online according to the Co-op split protocol.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              {/* Simulation Controls */}
+              <div className="lg:col-span-1 space-y-4">
+                <div>
+                  <label className="block text-brand-chrome-400 text-[10px] font-bold uppercase tracking-widest mb-1.5">
+                    Select Transaction Scenario
+                  </label>
+                  <select
+                    value={selectedTxType}
+                    onChange={(e) => setSelectedTxType(e.target.value as TxScenario)}
+                    className="w-full bg-black border border-brand-chrome-800 focus:border-brand-orange text-white text-xs px-3 py-2.5 outline-none"
+                  >
+                    <option value="standard-pos">Standard Repack Pack ($29.99) - POS Card Checkout</option>
+                    <option value="premium-app">Premium Repack Pack ($49.99) - App Self-Checkout</option>
+                    <option value="single-pos">Vintage Single Card ($12.00) - POS Card Checkout</option>
+                    <option value="drink-app">Premium Soursop Drink ($7.99) - App Self-Checkout</option>
+                  </select>
+                </div>
+
+                <div>
+                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-brand-chrome-400 mb-1.5">
+                    <span>Monthly Pack Volume ({monthlyVolume} sold)</span>
+                    <span className="text-brand-orange font-bold font-mono">{payoutRate}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="200"
+                    value={monthlyVolume}
+                    onChange={(e) => setMonthlyVolume(parseInt(e.target.value))}
+                    className="w-full accent-brand-orange bg-brand-chrome-800 h-1 cursor-pointer"
+                  />
+                  <span className="text-[10px] text-brand-chrome-500 block mt-1">
+                    Sliding scale: $5 base payout for packs 1-50, then drops to $1.
+                  </span>
+                </div>
+
+                {/* Calculations Card */}
+                <div className="bg-black border border-brand-chrome-850 p-4 space-y-2.5 text-xs font-sans">
+                  <span className="text-white font-bold uppercase block mb-1 text-[10px] tracking-wider text-brand-orange">
+                    Waterfall Payout Resolution
+                  </span>
+                  <div className="flex justify-between">
+                    <span className="text-brand-chrome-400">Gross Price:</span>
+                    <span className="text-white font-mono font-bold">${grossPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-brand-chrome-400 font-sans">Square Fee ({feePercentage}% + ${feeFlat.toFixed(2)}):</span>
+                    <span className="text-red-400 font-mono">-${squareFee.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between border-t border-brand-chrome-805 pt-2">
+                    <span className="text-brand-chrome-400">Net Sales:</span>
+                    <span className="text-white font-mono font-bold">${netPrice.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-brand-orange font-sans">
+                    <span>Stephen Commission:</span>
+                    <span className="font-mono font-bold">${stephenComm.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-green-400 font-bold border-t border-brand-chrome-805 pt-2">
+                    <span>ACool Net:</span>
+                    <span className="font-mono">${acoolNet.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mapped CSV schemas */}
+              <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                {/* Square POS catalog map */}
+                <div className="bg-black border border-brand-chrome-850 p-4 space-y-3 font-mono text-[10px]">
+                  <span className="text-white font-sans font-bold uppercase tracking-wider block text-xs border-b border-brand-chrome-805 pb-1.5">
+                    Square POS Catalog Mapping
+                  </span>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Token (Internal ID)</span>
+                    <span className="text-white font-bold">{squareMap.Token}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Item Name</span>
+                    <span className="text-white font-bold">{squareMap.ItemName}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">SKU</span>
+                    <span className="text-white font-bold">{squareMap.SKU}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Price</span>
+                    <span className="text-brand-orange font-bold">${squareMap.Price}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Category</span>
+                    <span className="text-white">{squareMap.Category}</span>
+                  </div>
+                </div>
+
+                {/* QuickBooks Sales receipt mapping */}
+                <div className="bg-black border border-brand-chrome-850 p-4 space-y-3 font-mono text-[10px]">
+                  <span className="text-white font-sans font-bold uppercase tracking-wider block text-xs border-b border-brand-chrome-805 pb-1.5">
+                    QuickBooks Sales Journal Map
+                  </span>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Receipt No</span>
+                    <span className="text-white font-bold">REC-SIM-{(monthlyVolume + 1000)}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Product Link</span>
+                    <span className="text-white font-bold">{qbMap.Product}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Unit Price</span>
+                    <span className="text-white font-bold">${qbMap.UnitPrice}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">Square Processing Fee</span>
+                    <span className="text-red-400 font-bold">-${qbMap.SquareFee}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">OPEN Commission split</span>
+                    <span className="text-brand-orange font-bold">${qbMap.OPENComm}</span>
+                  </div>
+                  <div>
+                    <span className="text-brand-chrome-500 block uppercase text-[8px]">ACool Net Receipts</span>
+                    <span className="text-green-400 font-bold">${qbMap.ACoolNet}</span>
+                  </div>
+                </div>
+
+              </div>
 
             </div>
           </section>
 
           {/* Partner Commission split overview */}
-          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6">
+          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6 no-print">
             <h2 className="text-white font-black text-lg uppercase mb-4">
               Payout <span className="text-brand-orange">Ledger</span>
             </h2>
@@ -211,8 +439,13 @@ const AdminPage: NextPage = () => {
             </div>
           </section>
 
+          {/* Tag Printing QR Generator Panel */}
+          <section className="no-print">
+            <QRGenerator />
+          </section>
+
           {/* Space Reservations */}
-          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6">
+          <section className="bg-brand-chrome-900 border border-brand-chrome-800 p-6 no-print">
             <h2 className="text-white font-black text-lg uppercase mb-4">
               OPEN LA Space <span className="text-brand-orange">Bookings</span>
             </h2>

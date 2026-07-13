@@ -41,3 +41,66 @@ body {
     border-image: linear-gradient(135deg, #484848, #888888, #484848) 1;
   }
 }
+
+/* ── Print Media Stylesheet (4x6 Physical product tags) ───────────────────── */
+@media print {
+  /* Set document color constraints */
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  
+  header, footer, nav, button, .no-print {
+    display: none !important;
+  }
+  
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Target 4x6 label dimension bounds exactly */
+  @page {
+    size: 4in 6in;
+    margin: 0 !important;
+  }
+
+  .print-label {
+    width: 4in !important;
+    height: 6in !important;
+    max-width: 4in !important;
+    max-height: 6in !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.4in !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    z-index: 99999 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure text scales cleanly on printed paper */
+  .print-label * {
+    color: #000000 !important;
+  }
+
+  .print-label .font-display {
+    font-size: 14pt !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+  }
+
+  .print-label text, .print-label svg {
+    margin: 15px 0 !important;
+  }
+}
