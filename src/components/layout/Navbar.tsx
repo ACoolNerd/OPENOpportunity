@@ -2,16 +2,20 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-
-const navLinks = [
-  { label: 'Shop',     href: '/retail' },
-  { label: 'Pack Reveal', href: '/pack-reveal' },
-  { label: 'Studio',  href: '/studio' },
-  { label: 'Dashboard', href: '/dashboard' },
-];
+import { useApp } from '@/context/AppContext';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, logout } = useApp();
+
+  const navLinks = [
+    { label: 'Shop',        href: '/retail' },
+    { label: 'Events',      href: '/events' },
+    { label: 'Pack Reveal',  href: '/pack-reveal' },
+    { label: 'Studio',      href: '/studio' },
+    { label: 'Profile',     href: '/profile' },
+    { label: 'Admin',       href: '/admin' },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-brand-chrome-800">
@@ -27,7 +31,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-6">
+        <ul className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <li key={link.href}>
               <Link
@@ -40,8 +44,28 @@ export default function Navbar() {
           ))}
         </ul>
 
-        {/* CTA */}
-        <div className="hidden md:flex items-center gap-3">
+        {/* User Status / CTA */}
+        <div className="hidden md:flex items-center gap-4">
+          {user ? (
+            <div className="flex items-center gap-4 bg-brand-chrome-900 border border-brand-chrome-700 px-4 py-1.5 rounded-full">
+              <span className="text-brand-chrome-400 text-xs font-mono">@{user.handle}</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-pulse" />
+              <span className="text-white text-xs font-bold font-mono text-brand-orange">{user.points} PTS</span>
+              <button 
+                onClick={logout}
+                className="text-brand-chrome-500 hover:text-red-400 text-xs font-bold uppercase tracking-wider transition-colors ml-2"
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/profile"
+              className="text-brand-chrome-300 hover:text-brand-orange text-xs font-bold uppercase tracking-widest transition-colors"
+            >
+              Sign In
+            </Link>
+          )}
           <Link
             href="/retail"
             className="bg-brand-orange hover:bg-orange-500 text-white text-sm font-bold uppercase tracking-widest px-5 py-2 transition-colors duration-200"
@@ -53,7 +77,7 @@ export default function Navbar() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setOpen(!open)}
-          className="md:hidden text-white p-2"
+          className="lg:hidden text-white p-2"
           aria-label="Toggle menu"
         >
           <span className="block w-6 h-0.5 bg-white mb-1.5" />
@@ -64,7 +88,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-brand-chrome-900 border-t border-brand-chrome-800">
+        <div className="lg:hidden bg-brand-chrome-900 border-t border-brand-chrome-800">
           <ul className="px-4 py-4 space-y-3">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -77,6 +101,27 @@ export default function Navbar() {
                 </Link>
               </li>
             ))}
+            {user ? (
+              <li className="pt-2 border-t border-brand-chrome-800 flex items-center justify-between">
+                <span className="text-white text-sm font-bold">@{user.handle} ({user.points} pts)</span>
+                <button 
+                  onClick={() => { logout(); setOpen(false); }}
+                  className="text-red-400 text-xs font-bold uppercase"
+                >
+                  Sign Out
+                </button>
+              </li>
+            ) : (
+              <li className="pt-2 border-t border-brand-chrome-800">
+                <Link
+                  href="/profile"
+                  onClick={() => setOpen(false)}
+                  className="block text-brand-orange text-sm font-bold uppercase"
+                >
+                  Sign In / Register
+                </Link>
+              </li>
+            )}
             <li>
               <Link
                 href="/retail"
