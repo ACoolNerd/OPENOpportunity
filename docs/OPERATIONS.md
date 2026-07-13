@@ -24,6 +24,13 @@
 5. Reconcile sales/refunds weekly and settlements monthly.
 6. Rotate, reprice, or return unsold inventory at day 90.
 
+## Physical fixtures
+
+- Staffed counter: black 6-tier stand, 17.7 × 9.05 × 24 inches. Start with 20 top-loaded raw cards plus the OPEN/QR header zone. It is not lockable; clear premium cards nightly.
+- 3 × 3-foot table: lockable portable aluminum case, 26 × 17 × 1.9 inches. Plan 28 top-loaded cards in a 7 × 4 grid and increase only after physical fit testing.
+- Keep packs in an 18 × 6-inch zone behind the table case, with a QR/pricing sign in the remaining rear corner.
+- Fixture subtotal at the reviewed July 13, 2026 prices: $111.98 before tax; allow another $15–$30 for tabs, anti-slip mat, and sign holder.
+
 ## Pack production
 
 Use opaque 4 × 6 or 4.5 × 7-inch heat-sealable metallized pouches. Use the FoodSaver heat bar only after destructive testing on empty pouches and low-value commons; never vacuum cards. Sleeve all cards, protect hits, record manifest, and apply a serialized tamper seal.
