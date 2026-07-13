@@ -11,6 +11,7 @@ A launch-ready prototype for the OPEN LA retail program: branded landing page, p
 - Super-admin partner dashboard for Stephen Smalls and Keith McPherson
 - CSV export fields for Square Item ID and QuickBooks Item ID
 - Printable 4 × 6 entry card, packaging sheet, social SVG, and brand guide
+- Source-faithful OPEN media library, Stephen Smalls identity-preserving hero, and installable app icons
 - Operating, security, and deployment documentation
 
 ## Run
