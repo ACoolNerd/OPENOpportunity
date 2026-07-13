@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base reset ──────────────────────────────────────────────────────────── */
+html,
+body {
+  @apply bg-black text-white;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Chrome / metallic text utility ─────────────────────────────────────── */
+@layer utilities {
+  .text-chrome {
+    background: linear-gradient(
+      135deg,
+      #c8c8c8 0%,
+      #ffffff 30%,
+      #a8a8a8 50%,
+      #ffffff 70%,
+      #c8c8c8 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .bg-chrome-gradient {
+    background: linear-gradient(
+      135deg,
+      #1a1a1a 0%,
+      #2e2e2e 25%,
+      #0d0d0d 50%,
+      #2e2e2e 75%,
+      #1a1a1a 100%
+    );
+  }
+
+  .border-chrome {
+    border-image: linear-gradient(135deg, #484848, #888888, #484848) 1;
+  }
+}
