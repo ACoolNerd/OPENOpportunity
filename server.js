@@ -14,6 +14,7 @@ const port = Number(process.env.PORT || 3000);
 const base = process.env.PUBLIC_BASE_URL || `http://localhost:${port}`;
 const entriesFile = path.join(__dirname, 'data', 'entries.json');
 const catalog = JSON.parse(await fs.readFile(path.join(__dirname, 'data', 'catalog.json'), 'utf8'));
+const demo = { points: 240, drinks: 7, freeDrinks: 0, subscription: 'inactive', cards: [{ id: 'OPEN-2026-001', name: 'OPEN Opportunity Series 001', status: 'registered' }], rsvps: [], purchases: [] };
 
 app.disable('x-powered-by');
 app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], imgSrc: ["'self'", 'data:'], styleSrc: ["'self'", "'unsafe-inline'"], scriptSrc: ["'self'"], connectSrc: ["'self'"] } } }));
@@ -40,6 +41,27 @@ app.get('/api/config', (_req, res) => res.json({
   campaignWindow: { start: process.env.ENTRY_START_AT || null, end: process.env.ENTRY_END_AT || null },
   products: catalog
 }));
+
+app.get('/api/community', (_req, res) => res.json({
+  profile: demo,
+  levels: ['Rookie Collector','Community Seller','Certified Breaker','Featured Creator','Elite Host','ACool Ambassador'],
+  events: [{ id:'trade-night', title:'OPEN Trade Night', type:'Collect · Connect', status:'Interest list' },{ id:'creator-lab', title:'Creator Studio Lab', type:'Learn · Produce', status:'Interest list' },{ id:'juice-community', title:'Juice Up Community Pop-Up', type:'Wellness · Community', status:'Interest list' }],
+  rewards: { pointsPerDollar: 1, packRedemptionPoints: 1000, drinkPunchGoal: 10, subscriberMultiplier: 1.5 }
+}));
+
+app.post('/api/demo/purchase', (req, res) => {
+  const sku = clean(req.body.sku, 48); const item = catalog.find(x => x.sku === sku);
+  const price = item?.price ?? (sku === 'JUICE-UP' ? 8 : 0);
+  if (!price) return res.status(400).json({ error: 'Unknown demo item.' });
+  const multiplier = demo.subscription === 'active' ? 1.5 : 1;
+  demo.points += Math.floor(price * multiplier); if (sku === 'JUICE-UP') { demo.drinks++; if (demo.drinks >= 10) { demo.drinks -= 10; demo.freeDrinks++; } }
+  demo.purchases.unshift({ id: crypto.randomUUID(), sku, price, createdAt: new Date().toISOString(), processor: 'demo_only' });
+  res.json({ ok: true, profile: demo, message: 'Demo purchase recorded. No payment was processed.' });
+});
+
+app.post('/api/demo/subscribe', (_req, res) => { demo.subscription = demo.subscription === 'active' ? 'inactive' : 'active'; res.json({ ok:true, profile:demo, message:'Demo Juice Club status updated. No billing was started.' }); });
+app.post('/api/demo/rsvp', (req, res) => { const eventId = clean(req.body.eventId, 48); if (!eventId) return res.status(400).json({error:'Event required.'}); if (!demo.rsvps.includes(eventId)) demo.rsvps.push(eventId); res.json({ok:true,profile:demo,message:'Added to the demo interest list.'}); });
+app.post('/api/demo/register-card', (req, res) => { const code = clean(req.body.code, 48).toUpperCase(); if (!/^OPEN-[A-Z0-9-]{4,40}$/.test(code)) return res.status(400).json({error:'Use an OPEN-prefixed prototype code.'}); if (!demo.cards.some(x=>x.id===code)) demo.cards.push({id:code,name:'Community collectible',status:'registered'}); res.json({ok:true,profile:demo,message:'Prototype card registered.'}); });
 
 app.get('/api/passports/:id', (req, res) => {
   const id = clean(req.params.id, 48).toUpperCase();
